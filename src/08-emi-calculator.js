@@ -42,5 +42,35 @@
  *   // => { months: -1, totalPaid: -1, totalInterest: -1 }
  */
 export function calculateEMI(principal, monthlyRate, emi) {
-  // Your code here
+  if (typeof principal !== "number" || principal <= 0 ||
+    typeof monthlyRate !== "number" || monthlyRate <= 0 ||
+    typeof emi !== "number" || emi <= 0) {
+    return { months: -1, totalPaid: -1, totalInterest: -1 };
+  }
+  let firstMonthInterest = principal * monthlyRate;
+  if (emi <= firstMonthInterest) {
+    return { months: -1, totalPaid: -1, totalInterest: -1 };
+  }
+  let remaining = principal;
+  let months = 0;
+  let totalPaid = 0;
+  while (remaining > 0) {
+    let interest = remaining * monthlyRate;
+    remaining = remaining + interest;
+    if (remaining <= emi) {
+      totalPaid = totalPaid + remaining;
+      months = months + 1;
+      remaining = 0;
+    } else {
+      remaining = remaining - emi;
+      totalPaid = totalPaid + emi;
+      months = months + 1;
+    }
+  }
+  let totalInterest = Math.round((totalPaid - principal) * 100) / 100;
+  return {
+    months: months,
+    totalPaid: totalPaid,
+    totalInterest: totalInterest
+  };
 }
